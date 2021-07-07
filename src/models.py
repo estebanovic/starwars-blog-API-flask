@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask.app import Flask
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
@@ -16,11 +17,11 @@ class Person(db.Model):
     eye_color = db.Column(db.String, nullable=False)
     birth_year = db.Column(db.String, nullable=False)
     gender = db.Column(db.String, nullable=False)
-    created = db.Column(db.DATE, nullable=False)
-    edited = db.Column(db.DATE, nullable=False)
+    created = db.Column(db.String, nullable=False)
+    edited = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
-    ulr = db.Column(db.String, nullable=False)
-    homeworld = db.relationship('Planet', cascade='all, delete', backref='contact', uselist=False)
+    url = db.Column(db.String, nullable=False)
+    #TODO PLANETS
 
     def serialize(self):
         return {
@@ -39,8 +40,7 @@ class Person(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "ulr" : self.ulr,
-            "homeworld" : self.homeworld.serialize()
+            "url" : self.url
         }
 
     def save(self):
@@ -70,10 +70,10 @@ class Planet(db.Model):
     climate = db.Column(db.String, nullable=False)
     terrain = db.Column(db.String, nullable=False)
     surface_water = db.Column(db.Integer, nullable=False)
-    created = db.Column(db.DATE, nullable=False)
-    edited = db.Column(db.DATE, nullable=False)
+    created = db.Column(db.String, nullable=False)
+    edited = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
-    ulr = db.Column(db.String, nullable=False)
+    url = db.Column(db.String, nullable=False)
 
     def serialize(self):
         return {
@@ -93,7 +93,7 @@ class Planet(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "ulr" : self.ulr,
+            "url" : self.url,
         }
 
     def save(self):
@@ -131,7 +131,7 @@ class Starship(db.Model):
     edited = db.Column(db.DATE, nullable=False)
     name = db.Column(db.String, nullable=False)
     ulr = db.Column(db.String, nullable=False)
-    pilots = db.relationship('Person', cascade='all, delete', backref='contact')
+    #TODO PILOTS
 
     def serialize(self):
         return {
@@ -155,8 +155,7 @@ class Starship(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "ulr" : self.ulr,
-            "pilots": self.get_pilots()
+            "ulr" : self.ulr
         }
 
     def save(self):
@@ -170,9 +169,9 @@ class Starship(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_pilots(self):
-        pilots = list(map(lambda pilot: pilot.serialize(), self.pilots))
-        return pilots
+    # def get_pilots(self):
+    #     pilots = list(map(lambda pilot: pilot.serialize(), self.pilots))
+    #     return pilots
 
 
 class Specie(db.Model):
@@ -194,8 +193,8 @@ class Specie(db.Model):
     edited = db.Column(db.DATE, nullable=False)
     name = db.Column(db.String, nullable=False)
     ulr = db.Column(db.String, nullable=False)
-    homeworld = db.relationship('Planet', cascade='all, delete', backref='contact', uselist=False)
-    people = db.relationship('Person', cascade='all, delete', backref='contact')
+    #TODO PLANETS
+    #TODO PEOPLE
 
     def serialize(self):
         return {
@@ -215,9 +214,7 @@ class Specie(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "ulr" : self.ulr,
-            "homeworld" : self.homeworld.serialize(),
-            "people": self.get_people()
+            "ulr" : self.ulr
         }
 
     def save(self):
@@ -231,9 +228,9 @@ class Specie(db.Model):
         db.session.delete(self)
         db.session.commit()
     
-    def get_people(self):
-        people = list(map(lambda person: person.serialize(), self.people))
-        return people
+    # def get_people(self):
+    #     people = list(map(lambda person: person.serialize(), self.people))
+    #     return people
 
 
 class Vehicle(db.Model):
@@ -257,8 +254,8 @@ class Vehicle(db.Model):
     edited = db.Column(db.DATE, nullable=False)
     name = db.Column(db.String, nullable=False)
     ulr = db.Column(db.String, nullable=False)
-    films = db.relationship('Film', cascade='all, delete', backref='contact')
-    pilots = db.relationship('Person', cascade='all, delete', backref='contact')
+    #TODO FILS
+    #TODO PILOTS
 
     def serialize(self):
         return {
@@ -280,9 +277,7 @@ class Vehicle(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "ulr" : self.ulr,
-            "films": self.get_films(),
-            "pilots": self.get_pilots()
+            "ulr" : self.ulr
         }
 
     def save(self):
@@ -296,13 +291,13 @@ class Vehicle(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_films(self):
-        films = list(map(lambda film: film.serialize(), self.films))
-        return films
+    # def get_films(self):
+    #     films = list(map(lambda film: film.serialize(), self.films))
+    #     return films
 
-    def get_pilots(self):
-        pilots = list(map(lambda pilot: pilot.serialize(), self.pilots))
-        return pilots
+    # def get_pilots(self):
+    #     pilots = list(map(lambda pilot: pilot.serialize(), self.pilots))
+    #     return pilots
 
 
 class Film(db.Model):
@@ -322,11 +317,11 @@ class Film(db.Model):
     edited = db.Column(db.DATE, nullable=False)
     name = db.Column(db.String, nullable=False)
     ulr = db.Column(db.String, nullable=False)
-    people = db.relationship('Person', cascade='all, delete', backref='contact')
-    planets = db.relationship('Planet', cascade='all, delete', backref='contact')
-    starships = db.relationship('Starship', cascade='all, delete', backref='contact')
-    vehicles = db.relationship('Vehicle', cascade='all, delete', backref='contact')
-    species = db.relationship('Specie', cascade='all, delete', backref='contact')
+    # people = db.relationship('Person', cascade='all, delete', backref='contact')
+    # planets = db.relationship('Planet', cascade='all, delete', backref='contact')
+    # starships = db.relationship('Starship', cascade='all, delete', backref='contact')
+    # vehicles = db.relationship('Vehicle', cascade='all, delete', backref='contact')
+    # species = db.relationship('Specie', cascade='all, delete', backref='contact')
 
     def save(self):
         db.session.add(self)
@@ -339,24 +334,24 @@ class Film(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_people(self):
-        people = list(map(lambda person: person.serialize(), self.people))
-        return people
+    # def get_people(self):
+    #     people = list(map(lambda person: person.serialize(), self.people))
+    #     return people
 
-    def get_planets(self):
-        planets = list(map(lambda planet: planet.serialize(), self.planets))
-        return planets
+    # def get_planets(self):
+    #     planets = list(map(lambda planet: planet.serialize(), self.planets))
+    #     return planets
 
-    def get_starships(self):
-        starships = list(map(lambda starship: starship.serialize(), self.starships))
-        return starships
+    # def get_starships(self):
+    #     starships = list(map(lambda starship: starship.serialize(), self.starships))
+    #     return starships
 
-    def get_vehicles(self):
-        vehicles = list(map(lambda vehicle: vehicle.serialize(), self.vehicles))
-        return vehicles
+    # def get_vehicles(self):
+    #     vehicles = list(map(lambda vehicle: vehicle.serialize(), self.vehicles))
+    #     return vehicles
 
-    def get_species(self):
-        species = list(map(lambda specie: specie.serialize(), self.peopspeciesle))
-        return species
+    # def get_species(self):
+    #     species = list(map(lambda specie: specie.serialize(), self.peopspeciesle))
+    #     return species
 
     
