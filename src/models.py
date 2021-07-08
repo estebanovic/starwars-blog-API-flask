@@ -354,4 +354,55 @@ class Film(db.Model):
     #     species = list(map(lambda specie: specie.serialize(), self.peopspeciesle))
     #     return species
 
-    
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    mail = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    #TODO list of favorites
+
+    def serialize(self):
+        return {
+            "id" : self.id,
+            "username" : self.username,
+            "mail" : self.mail,
+            "password" : self.password
+            #TODO list of favorites
+        }
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
+class Favorite(db.Model):
+    __tablename__ = "favorites"
+    id = db.Column(db.Integer, primary_key=True)
+    favorite_uid = db.Column(db.String, nullable=False)
+    favorite_class = db.Column(db.String, nullable=False)
+
+    def serialize(self):
+        return {
+            "id" : self.id,
+            "favorite_uid" : self.favorite_uid,
+            "favorite_class" : self.favorite_class
+        }
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
