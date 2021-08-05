@@ -21,7 +21,7 @@ class Person(db.Model):
     edited = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
-    #TODO PLANETS
+    # planets = db.relationship('Planet', cascade='all, delete', backref='user')
 
     def serialize(self):
         return {
@@ -40,7 +40,8 @@ class Person(db.Model):
             "created" : self.created,
             "edited" : self.edited,
             "name" : self.name,
-            "url" : self.url
+            "url" : self.url,
+            # "planets" : self.get_planets()
         }
 
     def save(self):
@@ -53,6 +54,10 @@ class Person(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    # def get_planets(self):
+    #     planets = list(map(lambda planet: planet.serialize(), self.planets))
+    #     return planets
 
 
 class Planet(db.Model):
@@ -74,6 +79,7 @@ class Planet(db.Model):
     edited = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
+    # person_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
     def serialize(self):
         return {
@@ -357,16 +363,18 @@ class Film(db.Model):
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
-    mail = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     #TODO list of favorites
 
     def serialize(self):
         return {
             "id" : self.id,
-            "username" : self.username,
-            "mail" : self.mail,
+            "firs_name" : self.first_name,
+            "last_name" : self.last_name,
+            "email" : self.email,
             "password" : self.password
             #TODO list of favorites
         }

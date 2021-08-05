@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
-from models import  db, Person, Planet
+from models import  User, db, Person, Planet
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -120,6 +120,36 @@ def planets(id=None):
         planet.save()
 
         return jsonify(planet.serialize()), 201
+
+
+@app.route('/users', methods=['GET','POST'])
+@app.route('/users/<int:id>', methods=['GET','POST'])
+def users(id=None):
+    
+    if request.method == 'GET':
+        if id != None:
+            user = User.query.get(id)
+            return jsonify(user.serialize()), 200
+        
+        users = User.query.all()
+        users = list(map(lambda user: user.serialize(), users))
+        return jsonify(users), 200
+
+    if request.method == 'POST':
+        first_name = request.json.get('first_name')
+        last_name = request.json.get('last_name')
+        email = request.json.get('email')
+        password = request.json.get('password')
+
+        user = User()
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.password = password
+
+        user.save()
+
+        return jsonify(user.serialize()), 201
 
 if __name__ == '__main__':
     app.run()
