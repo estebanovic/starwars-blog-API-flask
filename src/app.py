@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
-from models import  User, db, Person, Planet
+from sqlalchemy.orm import query
+from models import  Favorite, User, db, Person, Planet
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -150,6 +151,44 @@ def users(id=None):
         user.save()
 
         return jsonify(user.serialize()), 201
+
+
+@app.route('/favorite/person/<int:id>', methods=['POST'])
+def favorite_person(id=None):
+    if request.method == 'POST':
+        favorite = Favorite()
+        favorite.favorite_uid = id
+        favorite.favorite_class = "person"
+        favorite.user_id = 1
+
+        favorite.save()
+
+        return jsonify(favorite.serialize()), 201
+    
+    if request.method == 'DELETE':
+        favorite = Favorite.query.filter_by(favorite_id=id, favorite_class="person", user_id = 1).first()
+        favorite.delete()
+
+        return jsonify("favorite deleted successfully"), 200
+
+
+@app.route('/favorite/planet/<int:id>', methods=['POST'])
+def favorite_planet(id=None):
+    if request.method == 'POST':
+        favorite = Favorite()
+        favorite.favorite_uid = id
+        favorite.favorite_class = "planet"
+        favorite.user_id = 1
+
+        favorite.save()
+
+        return jsonify(favorite.serialize()), 201
+    
+    if request.method == 'DELETE':
+        favorite = Favorite.query.filter_by(favorite_id=id, favorite_class="planet", user_id = 1).first()
+        favorite.delete()
+
+        return jsonify("favorite deleted successfully"), 200
 
 if __name__ == '__main__':
     app.run()
