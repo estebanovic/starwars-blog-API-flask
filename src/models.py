@@ -367,7 +367,7 @@ class User(db.Model):
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
-    #TODO list of favorites
+    favorites = db.relationship('Favorite', cascade='all, delete', backref='user')
 
     def serialize(self):
         return {
@@ -375,8 +375,8 @@ class User(db.Model):
             "firs_name" : self.first_name,
             "last_name" : self.last_name,
             "email" : self.email,
-            "password" : self.password
-            #TODO list of favorites
+            "password" : self.password,
+            "favorites" : self.get_favorites()
         }
 
     def save(self):
@@ -390,12 +390,17 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def get_favorites(self):
+        favorites = list(map(lambda favorite: favorite.serialize(), self.favorites))
+        return favorites
+
 
 class Favorite(db.Model):
     __tablename__ = "favorites"
     id = db.Column(db.Integer, primary_key=True)
     favorite_uid = db.Column(db.String, nullable=False)
     favorite_class = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
     def serialize(self):
         return {
